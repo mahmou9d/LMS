@@ -46,7 +46,8 @@ const Courses = () => {
 
     if (search.trim())
       list = list.filter((c) =>
-        c.name?.toLowerCase().includes(search.toLowerCase()),
+        typeof c?.name === "string" &&
+        c.name.toLowerCase().includes(search.toLowerCase()),
       );
 
     return list;

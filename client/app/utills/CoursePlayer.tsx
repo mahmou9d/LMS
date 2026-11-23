@@ -3,29 +3,37 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 type Props = {
-  videoUrl?: string;
+  videoUrl?: any;
   title?: string;
 };
 
 const CoursePlayer = ({ videoUrl, title }: Props) => {
   const [videoData, setVideoData] = useState({ otp: "", playbackInfo: "" });
 
+  const url =
+    typeof videoUrl === "string"
+      ? videoUrl
+      : typeof videoUrl === "object" && videoUrl !== null && "url" in videoUrl
+      ? (videoUrl as { url?: string }).url || ""
+      : "";
+
   const isYouTube =
-    videoUrl &&
-    (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be"));
+    typeof url === "string" &&
+    Boolean(url) &&
+    (url.includes("youtube.com") || url.includes("youtu.be"));
   let youtubeId = "";
 
   if (isYouTube) {
     const regExp =
       /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = videoUrl.match(regExp);
-    if (match && match[2].length === 11) {
+    const match = url.match(regExp);
+    if (match && match[2] && match[2].length === 11) {
       youtubeId = match[2];
     }
   }
 
   useEffect(() => {
-    if (videoUrl && !isYouTube && !videoUrl.startsWith("http")) {
+    if (url && !isYouTube && !url.startsWith("http")) {
       const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "";
       const endpoint = serverUrl.endsWith("/")
         ? `${serverUrl}getVdoCipherOPT`
@@ -33,7 +41,7 @@ const CoursePlayer = ({ videoUrl, title }: Props) => {
 
       axios
         .post(endpoint, {
-          videoId: videoUrl,
+          videoId: url,
         })
         .then(({ data }) => {
           setVideoData(data);
@@ -42,7 +50,7 @@ const CoursePlayer = ({ videoUrl, title }: Props) => {
           console.error("VdoCipher OTP fetch error:", error);
         });
     }
-  }, [videoUrl, isYouTube]);
+  }, [url, isYouTube]);
 
   return (
     <div style={{ paddingTop: "41%", position: "relative" }}>

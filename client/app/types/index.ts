@@ -46,7 +46,7 @@ export interface ICourseData {
   _id?: string;
   title: string;
   description: string;
-  videoUrl: string;
+  videoUrl: string | { url?: string };
   videoThumbnail?: { public_id: string; url: string };
   videoSection: string;
   videoLength: string;

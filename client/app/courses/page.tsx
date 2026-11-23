@@ -36,6 +36,7 @@ const Page = () => {
     // Filter by search query
     if (query.trim()) {
       list = list.filter((item: ICourse) =>
+        typeof item?.name === "string" &&
         item.name.toLowerCase().includes(query.toLowerCase()),
       );
     }
